@@ -1,0 +1,16 @@
+node_modules/
+dist/
+.vite/
+*.log
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+coverage/
+.env
+.env.local
+.env.*.local
+tmp var/
+debug_logo.txt
+temp_nav.txt
+qwerty.jpg
