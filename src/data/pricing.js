@@ -13,7 +13,7 @@ export const pricingPlans = [
         design: "Deadline: 1 week",
         build: "Deadline: 1-2 weeks",
       },
-      "Telegram/WhatsApp/Discord/Slack",
+      "Telegram/WhatsApp/Discord",
     ],
     price: {
       design: "₱ 8,000",
@@ -39,7 +39,7 @@ export const pricingPlans = [
         design: "Deadline: 1-2 weeks",
         build: "Deadline: 2-3 weeks",
       },
-      "Telegram/WhatsApp/Discord/Slack",
+      "Telegram/WhatsApp/Discord",
     ],
     price: {
       design: "₱ 10,000",

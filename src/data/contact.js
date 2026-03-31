@@ -1,8 +1,6 @@
 const TELEGRAM_URL = "https://t.me/amoraberme";
 const WHATSAPP_URL = "https://wa.me/639982460386";
-const VIBER_URL = "viber://chat?number=%2B639982460386";
 const WHATSAPP_PHONE = "639982460386";
-const VIBER_PHONE = "+639982460386";
 
 const buildLink = (label, href) => ({
   label,
@@ -32,12 +30,6 @@ export const discussionLinks = [
     TELEGRAM_URL,
     "tg://resolve?domain=amoraberme",
     TELEGRAM_URL
-  ),
-  buildDiscussionLink(
-    "Viber",
-    VIBER_URL,
-    VIBER_URL,
-    `tel:${VIBER_PHONE}`
   ),
   buildDiscussionLink(
     "WhatsApp",

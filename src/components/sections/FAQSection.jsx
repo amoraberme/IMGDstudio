@@ -34,7 +34,6 @@ export default function FAQSection({
   const icons = {
     Telegram: <TelegramIcon />,
     WhatsApp: <WhatsAppIcon />,
-    Viber: <XIcon />,
     Discord: <XIcon />,
   };
 

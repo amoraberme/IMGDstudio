@@ -134,24 +134,30 @@ function PricingCornerMark({ mode }) {
 
   return (
     <span className="pricing-dev-stack" aria-hidden="true">
-      <span className="pricing-dev-pill">
-        <VercelIcon />
-        <span>Vercel</span>
+      <span className="pricing-dev-group">
+        <span className="pricing-dev-pill">
+          <VercelIcon />
+          <span>Vercel</span>
+        </span>
+        <span className="pricing-dev-plus">+</span>
+        <span className="pricing-dev-pill">
+          <GitHubIcon />
+          <span>GitHub</span>
+        </span>
       </span>
-      <span className="pricing-dev-plus">+</span>
-      <span className="pricing-dev-pill">
-        <GitHubIcon />
-        <span>GitHub</span>
-      </span>
-      <span className="pricing-dev-plus">+</span>
-      <span className="pricing-dev-pill">
-        <SupabaseIcon />
-        <span>Supabase</span>
-      </span>
-      <span className="pricing-dev-plus">+</span>
-      <span className="pricing-dev-pill">
-        <AnalyticsIcon />
-        <span>Analytics</span>
+
+      <span className="pricing-dev-plus pricing-dev-separator">+</span>
+
+      <span className="pricing-dev-group">
+        <span className="pricing-dev-pill">
+          <SupabaseIcon />
+          <span>Supabase</span>
+        </span>
+        <span className="pricing-dev-plus">+</span>
+        <span className="pricing-dev-pill">
+          <AnalyticsIcon />
+          <span>Analytics</span>
+        </span>
       </span>
     </span>
   );

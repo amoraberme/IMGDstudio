@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useSiteShell } from "../common/SiteShellContext";
 
 function XIcon() {
@@ -10,13 +11,19 @@ function XIcon() {
 
 export default function HeroSection() {
   const { openContactModal } = useSiteShell();
+  const [tooltipPos, setTooltipPos] = useState({ x: 0, y: 0 });
+  const [showTooltip, setShowTooltip] = useState(false);
+
+  const handleMouseMove = (e) => {
+    setTooltipPos({ x: e.clientX, y: e.clientY });
+  };
 
   return (
     <section
       id="main-1"
       className="hero-stage relative overflow-hidden pt-28 pb-8 px-6 max-w-6xl mx-auto text-center flex flex-col items-center"
     >
-      <div className="hero-badge mb-8 reveal-up" data-reveal style={{ "--reveal-delay": "0ms" }}>
+      <div className="hero-badge mt-28 mb-8 reveal-up" data-reveal style={{ "--reveal-delay": "0ms" }}>
         <div className="hero-badge-avatars" aria-hidden="true">
           <span className="hero-badge-avatar a1" />
           <span className="hero-badge-avatar a2" />
@@ -118,40 +125,45 @@ export default function HeroSection() {
         </article>
 
         <article
-          className="hero-panel hero-panel-center reveal-up"
-          aria-label="AI agent showcase"
+          className="hero-panel hero-panel-center-v2 reveal-up is-clickable"
+          aria-label="Engine showcase"
           data-reveal
           style={{ "--reveal-delay": "210ms" }}
+          onMouseEnter={() => setShowTooltip(true)}
+          onMouseLeave={() => setShowTooltip(false)}
+          onMouseMove={handleMouseMove}
+          onClick={() => window.open("https://www.careersync.website/", "_blank")}
         >
-          <div className="hero-center-top">
-            <span className="hero-center-brand">Nexio</span>
-            <nav aria-hidden="true">
-              <span>Product</span>
-              <span>Solutions</span>
-              <span>Pricing</span>
-              <span>Resources</span>
-              <span>Contact</span>
-            </nav>
-            <span className="hero-center-ghost" aria-hidden="true">
-              Join Beta
-            </span>
-          </div>
-
-          <div className="hero-center-headline">
-            <p>Your smartest AI SDR</p>
-            <h3>AI Agent That Turns Emails Into Closed Deals</h3>
-            <div className="hero-center-actions" aria-hidden="true">
-              <span className="hero-center-action primary">Join Beta</span>
-              <span className="hero-center-action">Watch Demo</span>
+          <div className="careersync-scan-card">
+            <div className="card-header">
+              <span><span className="live-dot"></span>LIVE RESUME MATCH SCAN</span>
+              <span style={{ color: "#999" }}>10: 87x-992-bf</span>
             </div>
-          </div>
-
-          <div className="hero-center-canvas" aria-hidden="true">
-            <div className="hero-center-note">
-              Your words feel personal, your site feels premium, and every message lands with
-              confidence.
+            <div className="scan-grid">
+              <div className="gauge-container">
+                <svg className="gauge-svg" width="100" height="100" viewBox="0 0 100 100">
+                  <circle className="gauge-bg" cx="50" cy="50" r="40"></circle>
+                  <circle className="gauge-fill" cx="50" cy="50" r="40"></circle>
+                </svg>
+                <div className="gauge-text">
+                  <span className="gauge-val">85</span>
+                  <span className="gauge-max">/100</span>
+                </div>
+              </div>
+              <div className="tags-container">
+                <span className="tag">Python</span>
+                <span className="tag">Results-driven</span>
+                <span className="tag" style={{ background: "#e1f2ef" }}>Project Management</span>        
+                <span className="tag">Hard worker</span>
+                <span className="tag" style={{ background: "#e1f2ef" }}>React</span>
+                <span className="tag">Team player</span>
+                <span className="tag" style={{ background: "#e1f2ef" }}>Stakeholder Communication</span> 
+                <span className="tag">SQL</span>
+              </div>
             </div>
-            <div className="hero-center-envelope" />
+            <div className="status-terminal">
+              {">"} match_analysis_complete: drafting_cover_letter... <span className="cursor"></span>    
+            </div>
           </div>
         </article>
 
@@ -198,6 +210,23 @@ export default function HeroSection() {
           </div>
         </article>
       </div>
+
+      {showTooltip && (
+        <div 
+          className="hero-center-tooltip"
+          style={{ 
+            left: `${tooltipPos.x}px`, 
+            top: `${tooltipPos.y}px` 
+          }}
+        >
+          <span>Visit careersync.website</span>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+            <polyline points="15 3 21 3 21 9"></polyline>
+            <line x1="10" y1="14" x2="21" y2="3"></line>
+          </svg>
+        </div>
+      )}
     </section>
   );
 }
