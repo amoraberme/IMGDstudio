@@ -83,6 +83,9 @@ async function run() {
     await fs.mkdir(assetsDir, { recursive: true });
 
     const assetMap = new Map();
+    const visited = new Set();
+    const queue = [TARGET_URL];
+    const urlToLocalPath = new Map();
 
     // Intercept assets
     page.on('response', async (response) => {
@@ -107,51 +110,85 @@ async function run() {
                 await fs.writeFile(filePath, buffer);
                 assetMap.set(url, `assets/${fileName}`);
             } catch (e) {
-                // Some responses might not have a body or be closed
+                // Ignore errors during body capture
             }
         }
     });
 
-    console.log(`Navigating to ${TARGET_URL}...`);
-    try {
-        await page.goto(TARGET_URL, { waitUntil: 'networkidle', timeout: 60000 });
-        
-        // Scroll to trigger lazy loading
-        console.log('Scrolling to trigger lazy loading...');
-        await page.evaluate(async () => {
-            await new Promise((resolve) => {
-                let totalHeight = 0;
-                let distance = 200;
-                let timer = setInterval(() => {
-                    let scrollHeight = document.body.scrollHeight;
-                    window.scrollBy(0, distance);
-                    totalHeight += distance;
-                    if (totalHeight >= scrollHeight) {
-                        clearInterval(timer);
-                        resolve();
-                    }
-                }, 100);
-            });
-        });
+    while (queue.length > 0) {
+        const currentUrl = queue.shift();
+        if (visited.has(currentUrl)) continue;
+        visited.add(currentUrl);
 
-        // Wait a bit for final assets
-        await page.waitForTimeout(2000);
-        
-        const content = await page.content();
-        
-        console.log('Sanitizing HTML and rewriting paths...');
-        const sanitizedContent = await sanitize(content, assetMap);
-        
-        await fs.mkdir(DIST_DIR, { recursive: true });
-        await fs.writeFile(path.join(DIST_DIR, 'index.html'), sanitizedContent);
-        
-        console.log(`Successfully captured and sanitized index.html with ${assetMap.size} assets`);
-    } catch (error) {
-        console.error('Error during crawl:', error);
-    } finally {
-        await browser.close();
+        console.log(`\n--- Crawling: ${currentUrl} ---`);
+        try {
+            await page.goto(currentUrl, { waitUntil: 'networkidle', timeout: 60000 });
+            
+            // Scroll to trigger lazy loading
+            console.log('Scrolling to trigger lazy loading...');
+            await page.evaluate(async () => {
+                await new Promise((resolve) => {
+                    let totalHeight = 0;
+                    let distance = 300;
+                    let timer = setInterval(() => {
+                        let scrollHeight = document.body.scrollHeight;
+                        window.scrollBy(0, distance);
+                        totalHeight += distance;
+                        if (totalHeight >= scrollHeight) {
+                            clearInterval(timer);
+                            resolve();
+                        }
+                    }, 100);
+                });
+            });
+
+            await page.waitForTimeout(2000);
+            
+            const content = await page.content();
+            const dom = new JSDOM(content);
+            const document = dom.window.document;
+
+            // Extract internal links
+            const links = Array.from(document.querySelectorAll('a'))
+                .map(a => a.href)
+                .filter(href => {
+                    try {
+                        const url = new URL(href, currentUrl);
+                        return url.origin === new URL(TARGET_URL).origin && !url.hash;
+                    } catch {
+                        return false;
+                    }
+                })
+                .map(href => new URL(href, currentUrl).href.split('?')[0].replace(/\/$/, ''));
+
+            for (const link of links) {
+                if (!visited.has(link) && !queue.includes(link)) {
+                    queue.push(link);
+                    console.log(`Discovered: ${link}`);
+                }
+            }
+
+            console.log(`Sanitizing HTML and rewriting paths for ${currentUrl}...`);
+            const sanitizedContent = await sanitize(content, assetMap);
+            
+            // Determine file path
+            const urlObj = new URL(currentUrl);
+            let relativePath = urlObj.pathname === '/' ? 'index.html' : `${urlObj.pathname.replace(/^\//, '')}.html`;
+            if (relativePath.includes('/')) {
+                const subDir = path.dirname(path.join(DIST_DIR, relativePath));
+                await fs.mkdir(subDir, { recursive: true });
+            }
+            
+            await fs.writeFile(path.join(DIST_DIR, relativePath), sanitizedContent);
+            console.log(`Saved to ${relativePath}`);
+
+        } catch (error) {
+            console.error(`Error during crawl of ${currentUrl}:`, error.message);
+        }
     }
-    console.log('Done.');
+
+    await browser.close();
+    console.log(`\nCrawl complete. Visited ${visited.size} pages and captured ${assetMap.size} assets.`);
 }
 
 run();
