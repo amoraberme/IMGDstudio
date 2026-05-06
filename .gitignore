@@ -1,0 +1,4 @@
+node_modules/
+dist/
+archive-errors.log
+.env
