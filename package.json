@@ -10,6 +10,8 @@
   },
   "scripts": {
     "archive": "node archive-site.js",
+    "build": "echo 'Building static archive...'",
+    "start": "node server.js",
     "serve": "node server.js"
   }
 }
