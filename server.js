@@ -20,9 +20,20 @@ app.use((req, res, next) => {
 
 app.use(express.static(DIST_DIR));
 
-app.listen(PORT, () => {
-    console.log(`\n--- Local Archive Preview Server ---`);
-    console.log(`Server running at http://localhost:${PORT}`);
-    console.log(`Serving from: ${DIST_DIR}`);
-    console.log(`Press Ctrl+C to stop.\n`);
-});
+const startServer = (port) => {
+    const server = app.listen(port, () => {
+        console.log(`\n--- Local Archive Preview Server ---`);
+        console.log(`Server running at http://localhost:${port}`);
+        console.log(`Serving from: ${DIST_DIR}`);
+        console.log(`Press Ctrl+C to stop.\n`);
+    }).on('error', (err) => {
+        if (err.code === 'EADDRINUSE') {
+            console.log(`Port ${port} is busy, trying ${port + 1}...`);
+            startServer(port + 1);
+        } else {
+            console.error(err);
+        }
+    });
+};
+
+startServer(PORT);
