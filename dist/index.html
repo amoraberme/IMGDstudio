@@ -970,320 +970,14 @@ document.addEventListener('keydown', function(event) {
 </script><script>
 document.addEventListener('DOMContentLoaded', function() {
   const figmaIcon = 'assets/ebff641e43bdb27079984cd8dc1773df.svg';
-  const modalId = 'email-preview-modal';
-
-  const ensureModal = function() {
-    if (document.getElementById(modalId)) {
-      return document.getElementById(modalId);
-    }
-
-    const style = document.createElement('style');
-    style.textContent = `
-      #${modalId} {
-        position: fixed;
-        inset: 0;
-        display: none;
-        align-items: center;
-        justify-content: center;
-        padding: 24px;
-        background: rgba(17, 24, 39, 0.25);
-        backdrop-filter: blur(6px);
-        -webkit-backdrop-filter: blur(6px);
-        z-index: 9999;
-      }
-
-      #${modalId}.is-open {
-        display: flex;
-      }
-
-      #${modalId} .email-preview-shell {
-        position: relative;
-        width: min(820px, 100%);
-        border-radius: 24px;
-        overflow: hidden;
-        background: #ffffff;
-        box-shadow: 0 30px 80px rgba(15, 23, 42, 0.25);
-        border: 1px solid rgba(15, 23, 42, 0.08);
-      }
-
-      #${modalId} .email-preview-layout {
-        display: grid;
-        grid-template-columns: 1.2fr 0.95fr;
-        min-height: 520px;
-      }
-
-      #${modalId} .email-preview-copy {
-        padding: 40px;
-        background: linear-gradient(180deg, #ffffff 0%, #f7f7f3 100%);
-      }
-
-      #${modalId} .email-preview-panel {
-        padding: 24px;
-        background: rgba(244, 244, 240, 0.85);
-        border-left: 1px solid rgba(15, 23, 42, 0.08);
-        display: flex;
-        align-items: center;
-      }
-
-      #${modalId} .email-preview-kicker {
-        display: inline-flex;
-        margin-bottom: 18px;
-        padding: 8px 12px;
-        border-radius: 999px;
-        background: #f3f0ea;
-        color: #4b5563;
-        font-size: 12px;
-        letter-spacing: 0.04em;
-        text-transform: uppercase;
-      }
-
-      #${modalId} .email-preview-title {
-        margin: 0 0 14px;
-        color: #111827;
-        font-size: 46px;
-        line-height: 1;
-        font-weight: 700;
-      }
-
-      #${modalId} .email-preview-text {
-        margin: 0 0 28px;
-        color: #6b7280;
-        font-size: 16px;
-        line-height: 1.65;
-      }
-
-      #${modalId} .email-preview-info {
-        display: grid;
-        gap: 14px;
-      }
-
-      #${modalId} .email-preview-info-item {
-        display: flex;
-        gap: 12px;
-        align-items: flex-start;
-      }
-
-      #${modalId} .email-preview-info-icon {
-        width: 42px;
-        height: 42px;
-        border-radius: 12px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: #f2efe9;
-        color: #111827;
-        flex: 0 0 auto;
-      }
-
-      #${modalId} .email-preview-info-icon svg {
-        width: 18px;
-        height: 18px;
-        display: block;
-      }
-
-      #${modalId} .email-preview-info-label {
-        margin: 0 0 4px;
-        color: #111827;
-        font-size: 14px;
-        font-weight: 600;
-      }
-
-      #${modalId} .email-preview-info-value {
-        margin: 0;
-        color: #6b7280;
-        font-size: 13px;
-        line-height: 1.5;
-      }
-
-      #${modalId} .email-preview-form {
-        width: 100%;
-        display: grid;
-        gap: 12px;
-      }
-
-      #${modalId} .email-preview-form-heading {
-        margin: 0 0 4px;
-        color: #111827;
-        font-size: 22px;
-        line-height: 1.2;
-        font-weight: 700;
-      }
-
-      #${modalId} .email-preview-form-text {
-        margin: 0 0 8px;
-        color: #6b7280;
-        font-size: 14px;
-        line-height: 1.6;
-      }
-
-      #${modalId} .email-preview-field {
-        width: 100%;
-        border: 1px solid rgba(15, 23, 42, 0.12);
-        border-radius: 14px;
-        padding: 14px 16px;
-        background: #ffffff;
-        color: #111827;
-        font: inherit;
-        transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
-      }
-
-      #${modalId} .email-preview-field:focus {
-        outline: none;
-        border-color: rgba(17, 24, 39, 0.45);
-        box-shadow: 0 0 0 4px rgba(17, 24, 39, 0.08);
-      }
-
-      #${modalId} textarea.email-preview-field {
-        min-height: 140px;
-        resize: vertical;
-      }
-
-      #${modalId} .email-preview-submit {
-        appearance: none;
-        border: 1px solid rgba(29, 30, 31, 0.12);
-        border-radius: 999px;
-        padding: 0;
-        background: #f2efe9;
-        color: #1d1e1f;
-        font: inherit;
-        font-weight: 600;
-        cursor: pointer;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        min-height: 52px;
-        width: fit-content;
-        box-shadow: none;
-        transition: transform 180ms ease, background 180ms ease, border-color 180ms ease;
-      }
-
-      #${modalId} .email-preview-submit:hover {
-        transform: translateY(-1px);
-        background: #ebe6dd;
-        border-color: rgba(29, 30, 31, 0.2);
-      }
-
-      #${modalId} .email-preview-submit:focus {
-        outline: none;
-        box-shadow: 0 0 0 4px rgba(29, 30, 31, 0.08);
-      }
-
-      #${modalId} .email-preview-submit .button-text-wrap {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        padding: 0 18px;
-        min-height: 52px;
-        white-space: nowrap;
-      }
-
-      #${modalId} .email-preview-close {
-        position: absolute;
-        top: 16px;
-        right: 16px;
-        width: 40px;
-        height: 40px;
-        border: 0;
-        border-radius: 999px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        background: rgba(15, 23, 42, 0.78);
-        color: #ffffff;
-        font-size: 22px;
-        line-height: 1;
-        cursor: pointer;
-        z-index: 1;
-      }
-
-      body.email-preview-open {
-        overflow: hidden;
-      }
-
-      @media (max-width: 767px) {
-        #${modalId} {
-          padding: 12px;
-        }
-
-        #${modalId} .email-preview-shell {
-          border-radius: 18px;
-        }
-
-        #${modalId} .email-preview-layout {
-          grid-template-columns: 1fr;
-        }
-
-        #${modalId} .email-preview-copy,
-        #${modalId} .email-preview-panel {
-          padding: 22px;
-        }
-
-        #${modalId} .email-preview-panel {
-          border-left: 0;
-          border-top: 1px solid rgba(15, 23, 42, 0.08);
-        }
-
-        #${modalId} .email-preview-title {
-          font-size: 34px;
-        }
-      }
-    `;
-    document.head.appendChild(style);
-
-    const modal = document.createElement('div');
-    modal.id = modalId;
-    modal.setAttribute('aria-hidden', 'true');
-    modal.innerHTML = '<div class="email-preview-shell"><button type="button" class="email-preview-close" aria-label="Close popup">X</button><div class="email-preview-layout"><div class="email-preview-copy"><div class="email-preview-kicker">Contact With Us</div><h2 class="email-preview-title">Let\'s talk.</h2><p class="email-preview-text">If you have questions about our services or want help with your next project, send a message here. We do our best to reply within 1 business day.</p><div class="email-preview-info"><div class="email-preview-info-item"><div class="email-preview-info-icon"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 7.5C4 6.67157 4.67157 6 5.5 6H18.5C19.3284 6 20 6.67157 20 7.5V16.5C20 17.3284 19.3284 18 18.5 18H5.5C4.67157 18 4 17.3284 4 16.5V7.5Z" stroke="currentColor" stroke-width="1.8"/><path d="M5 7L12 12.25L19 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div><p class="email-preview-info-label">Email</p><p class="email-preview-info-value">jericoberme29@gmail.com</p></div></div><div class="email-preview-info-item"><div class="email-preview-info-icon"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 21C15.5 17.4 18 14.55 18 11.5C18 8.46243 15.5376 6 12.5 6H11.5C8.46243 6 6 8.46243 6 11.5C6 14.55 8.5 17.4 12 21Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="12" cy="11.5" r="1.75" stroke="currentColor" stroke-width="1.8"/></svg></div><div><p class="email-preview-info-label">Location</p><p class="email-preview-info-value">Manila, Philippines</p></div></div><div class="email-preview-info-item"><div class="email-preview-info-icon"><svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="7" stroke="currentColor" stroke-width="1.8"/><path d="M12 8.5V12.5L14.5 14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div><p class="email-preview-info-label">Response Time</p><p class="email-preview-info-value">Usually within 1 business day</p></div></div></div></div><div class="email-preview-panel"><form class="email-preview-form"><h3 class="email-preview-form-heading">Start your project</h3><p class="email-preview-form-text">Share a few details and we’ll continue the conversation by email.</p><input class="email-preview-field" type="text" name="name" placeholder="Your name" required><input class="email-preview-field" type="email" name="email" placeholder="Your email" required><input class="email-preview-field" type="text" name="subject" placeholder="Subject"><textarea class="email-preview-field" name="message" placeholder="Tell us about your project" required></textarea><button class="email-preview-submit button grey nav-button w-inline-block" type="submit"><div class="button-text-wrap"><div><span class="email-preview-submit-text">Send message</span></div></div></button></form></div></div></div>';
-    document.body.appendChild(modal);
-
-    const closeModal = function() {
-      modal.classList.remove('is-open');
-      modal.setAttribute('aria-hidden', 'true');
-      document.body.classList.remove('email-preview-open');
-    };
-
-    modal.querySelector('.email-preview-close').addEventListener('click', closeModal);
-    modal.addEventListener('click', function(event) {
-      if (event.target === modal) {
-        closeModal();
-      }
-    });
-    document.addEventListener('keydown', function(event) {
-      if (event.key === 'Escape' && modal.classList.contains('is-open')) {
-        closeModal();
-      }
-    });
-
-    const form = modal.querySelector('.email-preview-form');
-    form.addEventListener('submit', function(event) {
-      event.preventDefault();
-      const submitButton = form.querySelector('.email-preview-submit');
-      const submitText = submitButton.querySelector('.email-preview-submit-text');
-      if (submitText) {
-        submitText.textContent = 'Resend setup pending';
-      }
-    });
-
-    modal.openPreview = function() {
-      modal.classList.add('is-open');
-      modal.setAttribute('aria-hidden', 'false');
-      document.body.classList.add('email-preview-open');
-    };
-
-    return modal;
-  };
+  const contactEmail = 'jericoberme29@gmail.com';
 
   const createFigmaButton = function() {
     const link = document.createElement('a');
-    link.href = '#';
-    link.setAttribute('data-email-preview-trigger', 'true');
+    link.href = 'mailto:' + contactEmail;
     link.className = 'button grey icon-35px w-inline-block';
-    link.setAttribute('aria-label', 'Open email preview');
+    link.setAttribute('aria-label', 'Send an email');
     link.innerHTML = '<div class="button-text-wrap"><img src="' + figmaIcon + '" loading="lazy" alt="Email icon" class="button-icon"></div>';
-    link.addEventListener('click', function(event) {
-      event.preventDefault();
-      ensureModal().openPreview();
-    });
     return link;
   };
 
@@ -1292,19 +986,14 @@ document.addEventListener('DOMContentLoaded', function() {
       existingButton.remove();
       return;
     }
-    existingButton.href = '#';
-    existingButton.setAttribute('data-email-preview-trigger', 'true');
+    existingButton.href = 'mailto:' + contactEmail;
     existingButton.removeAttribute('target');
     existingButton.removeAttribute('rel');
-    existingButton.setAttribute('aria-label', 'Open email preview');
+    existingButton.setAttribute('aria-label', 'Send an email');
     const existingIcon = existingButton.querySelector('img');
     if (existingIcon) {
       existingIcon.alt = 'Email icon';
     }
-    existingButton.addEventListener('click', function(event) {
-      event.preventDefault();
-      ensureModal().openPreview();
-    });
   });
 
   const navButtonWrap = document.querySelector('.navbar-wrapper > .nav-button-wrap');
@@ -1318,13 +1007,13 @@ document.addEventListener('DOMContentLoaded', function() {
       navButtonWrap.appendChild(navBookingButton);
     }
 
-    if (!navButtonWrap.querySelector('[data-email-preview-trigger="true"]')) {
+    if (!navButtonWrap.querySelector('a[href^="mailto:"]')) {
       navButtonWrap.appendChild(createFigmaButton());
     }
   }
 
   const footerButtonWrap = document.querySelector('.footer-button-wrap');
-  if (footerButtonWrap && !footerButtonWrap.querySelector('[data-email-preview-trigger="true"]')) {
+  if (footerButtonWrap && !footerButtonWrap.querySelector('a[href^="mailto:"]')) {
     footerButtonWrap.style.display = 'flex';
     footerButtonWrap.style.alignItems = 'center';
     footerButtonWrap.style.gap = '8px';
@@ -1526,17 +1215,3 @@ document.addEventListener('DOMContentLoaded', () => {
     link.addEventListener('blur', reset);
   });
 });</script></body></html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
